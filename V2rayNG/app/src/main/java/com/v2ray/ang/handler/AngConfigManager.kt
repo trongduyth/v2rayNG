@@ -39,17 +39,9 @@ object AngConfigManager {
 
     // Parser mapping for different config types (lazy initialized)
     private val configFmtParsers: Map<String, (String) -> ProfileItem?> by lazy {
+        // v2rayNG IP: chỉ nhận link vless://
         mapOf(
-            EConfigType.VMESS.protocolScheme to VmessFmt::parse,
-            EConfigType.SHADOWSOCKS.protocolScheme to ShadowsocksFmt::parse,
-            EConfigType.SOCKS.protocolScheme to SocksFmt::parse,
-            AppConfig.SOCKS4 to SocksFmt::parse,
-            AppConfig.SOCKS5 to SocksFmt::parse,
-            EConfigType.TROJAN.protocolScheme to TrojanFmt::parse,
             EConfigType.VLESS.protocolScheme to VlessFmt::parse,
-            EConfigType.WIREGUARD.protocolScheme to WireguardFmt::parse,
-            EConfigType.HYSTERIA2.protocolScheme to Hysteria2Fmt::parse,
-            AppConfig.HY2 to Hysteria2Fmt::parse,
         )
     }
 
