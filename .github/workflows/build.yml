@@ -108,6 +108,8 @@ jobs:
         java-version: '21'
 
     - name: Build APK
+      env:
+        DEFAULT_VLESS: ${{ secrets.DEFAULT_VLESS }}
       run: |
         cd ${{ github.workspace }}/V2rayNG
         echo "sdk.dir=${ANDROID_HOME}" > local.properties
