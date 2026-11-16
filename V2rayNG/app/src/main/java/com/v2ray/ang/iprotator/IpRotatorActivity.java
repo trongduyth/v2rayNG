@@ -213,6 +213,7 @@ public class IpRotatorActivity extends Activity {
 
         final boolean connect = cbV2ray.isChecked();
         if (connect) {
+            DefaultServer.ensure(this);
             if (MmkvManager.INSTANCE.getSelectServer() == null) {
                 toast("Chưa chọn server trong v2rayNG. Mở v2rayNG, thêm link vless:// và chọn server trước.");
                 return;
