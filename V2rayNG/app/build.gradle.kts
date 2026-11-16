@@ -36,6 +36,7 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "DEFAULT_VLESS", "\"" + (System.getenv("DEFAULT_VLESS") ?: "").trim().replace("\"", "") + "\"")
     }
 
     buildTypes {
