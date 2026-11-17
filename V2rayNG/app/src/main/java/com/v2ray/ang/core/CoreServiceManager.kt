@@ -181,6 +181,8 @@ object CoreServiceManager {
             MessageHelper.sendMsg2UI(service, AppConfig.MSG_STATE_START_SUCCESS, "")
         }
         NotificationManager.startSpeedNotification()
+        // v2rayNG IP: máy chủ PAC cho máy khác dùng chung khi đang bật Chia sẻ Wi-Fi
+        com.v2ray.ang.iprotator.PacServer.syncWithSettings(service)
         LogUtil.i(AppConfig.TAG, "StartCore-Manager: Core started successfully")
     }
 
@@ -206,6 +208,9 @@ object CoreServiceManager {
                 }
             }
         }
+
+        // v2rayNG IP: dừng máy chủ PAC cùng lúc với nhân
+        com.v2ray.ang.iprotator.PacServer.stop()
 
         // Close existing browser dialer
         CoreNativeManager.reconcileBrowserDialer("")

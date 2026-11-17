@@ -46,7 +46,7 @@ public class IpRotatorActivity extends Activity {
 
     private EditText edTarget, edOff, edWait, edMax;
     private RadioButton rbPublic, rbLocal, rbAssist, rbData, rbAirplane;
-    private CheckBox cbV2ray;
+    private CheckBox cbV2ray, cbShare;
     private TextView tvIp, tvLog;
     private ScrollView logScroll;
     private Button btnStart, btnStop;
@@ -128,6 +128,15 @@ public class IpRotatorActivity extends Activity {
         cbV2ray.setText("Khớp IP → tự kết nối V2Ray (server đang chọn trong v2rayNG)");
         cbV2ray.setChecked(true);
         root.addView(cbV2ray);
+
+        cbShare = new CheckBox(this);
+        cbShare.setText("Kết nối xong → bật Chia sẻ Wi-Fi cho máy khác");
+        root.addView(cbShare);
+        Button btnShare = new Button(this);
+        btnShare.setText("Mở màn hình Chia sẻ Wi-Fi (địa chỉ, mã QR)");
+        btnShare.setTextSize(12);
+        btnShare.setOnClickListener(v -> startActivity(new Intent(this, ShareActivity.class)));
+        root.addView(btnShare);
 
         LinearLayout btns = new LinearLayout(this);
         btns.setOrientation(LinearLayout.HORIZONTAL);
@@ -246,17 +255,26 @@ public class IpRotatorActivity extends Activity {
                         return;
                     }
                 }
+                log("Bắt đầu. Mẫu: " + patterns + " | " + (mode == 0 ? "trợ lý – máy bay" : mode == 1 ? "root – dữ liệu" : "root – máy bay"));
+
+                // IP card 4G đọc được cả khi V2Ray đang chạy: khớp sẵn thì không ngắt V2Ray
+                String ip = rbLocal.isChecked() ? getIp() : null;
+                if (ip != null) {
+                    showIp(ip);
+                    log("IP ban đầu: " + ip);
+                    if (matches(ip, patterns)) { done(ip, 0, connect); return; }
+                }
                 if (connect) {
                     LauncherManager.INSTANCE.stopService(IpRotatorActivity.this);
                     log("Đã ngắt V2Ray (nếu đang chạy) trước khi đổi IP");
                     sleepSec(1);
                 }
-                log("Bắt đầu. Mẫu: " + patterns + " | " + (mode == 0 ? "trợ lý – máy bay" : mode == 1 ? "root – dữ liệu" : "root – máy bay"));
-
-                String ip = getIp();
-                showIp(ip);
-                log("IP ban đầu: " + ip);
-                if (matches(ip, patterns)) { done(ip, 0, connect); return; }
+                if (ip == null) {
+                    ip = getIp();
+                    showIp(ip);
+                    log("IP ban đầu: " + ip);
+                    if (matches(ip, patterns)) { done(ip, 0, connect); return; }
+                }
 
                 int n = 0;
                 Set<String> seen = new LinkedHashSet<>();
@@ -297,6 +315,10 @@ public class IpRotatorActivity extends Activity {
             toast("Khớp IP " + ip + (connect ? " – đang kết nối V2Ray" : ""));
             if (connect) {
                 try {
+                    if (cbShare.isChecked()) {
+                        ShareManager.setEnabled(IpRotatorActivity.this, true);
+                        log("Đã bật Chia sẻ Wi-Fi (cổng " + ShareManager.PROXY_PORT + ", PAC cổng " + PacServer.PAC_PORT + ")");
+                    }
                     if (!LauncherManager.INSTANCE.startServiceFromToggle(IpRotatorActivity.this))
                         log("✘ Không bật được V2Ray – kiểm tra server trong v2rayNG");
                 } catch (Exception e) { log("✘ Lỗi bật V2Ray: " + e); }
@@ -483,6 +505,7 @@ public class IpRotatorActivity extends Activity {
                 .putString("m", edMax.getText().toString())
                 .putBoolean("local", rbLocal.isChecked())
                 .putBoolean("v2", cbV2ray.isChecked())
+                .putBoolean("share", cbShare.isChecked())
                 .putInt("mode", rbAssist.isChecked() ? 0 : rbData.isChecked() ? 1 : 2)
                 .apply();
     }
@@ -494,6 +517,7 @@ public class IpRotatorActivity extends Activity {
         edMax.setText(p.getString("m", "50"));
         (p.getBoolean("local", true) ? rbLocal : rbPublic).setChecked(true);
         cbV2ray.setChecked(p.getBoolean("v2", true));
+        cbShare.setChecked(p.getBoolean("share", false));
         int md = p.getInt("mode", 0);
         (md == 1 ? rbData : md == 2 ? rbAirplane : rbAssist).setChecked(true);
     }

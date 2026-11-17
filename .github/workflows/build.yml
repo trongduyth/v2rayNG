@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - master
+      - chia-se-wifi
 
 permissions:
   contents: write

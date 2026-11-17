@@ -365,6 +365,14 @@
                 android:resource="@xml/cache_paths" />
         </provider>
 
+        <!-- ===== Chia sẻ Wi-Fi cho máy khác (proxy + PAC) ===== -->
+        <activity
+            android:name=".iprotator.ShareActivity"
+            android:exported="false"
+            android:label="Chia sẻ Wi-Fi"
+            android:theme="@android:style/Theme.DeviceDefault"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
         <!-- ===== Đổi IP 4G → V2Ray ===== -->
         <activity
             android:name=".iprotator.IpRotatorActivity"

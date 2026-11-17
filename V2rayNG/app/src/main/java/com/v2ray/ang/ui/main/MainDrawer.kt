@@ -36,6 +36,7 @@ import com.v2ray.ang.ui.compose.verticalScrollbar
 
 enum class MainDestination(@DrawableRes val iconRes: Int, @StringRes val labelRes: Int) {
     IpRotator(R.drawable.ic_routing_24dp, R.string.title_ip_rotator),
+    ShareWifi(R.drawable.ic_share_24dp, R.string.title_share_wifi),
     Subscriptions(R.drawable.ic_subscriptions_24dp, R.string.title_sub_setting),
     PerAppProxy(R.drawable.ic_per_apps_24dp, R.string.per_app_proxy_settings),
     Routing(R.drawable.ic_routing_24dp, R.string.routing_settings_title),
@@ -51,6 +52,7 @@ enum class MainDestination(@DrawableRes val iconRes: Int, @StringRes val labelRe
 // v2rayNG IP: bỏ Promotion, CheckUpdate, UserAssets, BackupRestore khỏi menu
 private val primaryDrawerItems = listOf(
     MainDestination.IpRotator,
+    MainDestination.ShareWifi,
     MainDestination.Subscriptions,
     MainDestination.PerAppProxy,
     MainDestination.Routing,

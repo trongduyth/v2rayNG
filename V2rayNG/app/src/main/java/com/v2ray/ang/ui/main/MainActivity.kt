@@ -151,6 +151,10 @@ class MainActivity : HelperBaseComponentActivity() {
                 startActivity(Intent(this, com.v2ray.ang.iprotator.IpRotatorActivity::class.java))
                 return
             }
+            MainDestination.ShareWifi -> {
+                startActivity(Intent(this, com.v2ray.ang.iprotator.ShareActivity::class.java))
+                return
+            }
             MainDestination.Subscriptions -> Intent(this, SubSettingActivity::class.java)
             MainDestination.PerAppProxy -> Intent(this, PerAppProxyActivity::class.java)
             MainDestination.Routing -> Intent(this, RoutingSettingActivity::class.java)
