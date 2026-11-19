@@ -66,17 +66,21 @@ public final class ShareManager {
         try {
             for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 if (!ni.isUp() || ni.isLoopback()) continue;
-                String n = ni.getName().toLowerCase(Locale.US);
-                boolean share = n.startsWith("wlan") || n.startsWith("ap") || n.startsWith("swlan")
-                        || n.startsWith("softap") || n.startsWith("rndis") || n.startsWith("ncm")
-                        || n.startsWith("bt-pan") || n.startsWith("eth");
-                if (!share) continue;
+                if (!isShareIface(ni.getName())) continue;
                 for (InetAddress a : Collections.list(ni.getInetAddresses())) {
                     if (a instanceof Inet4Address && a.isSiteLocalAddress()) out.add(a.getHostAddress());
                 }
             }
         } catch (Exception ignored) {}
         return out;
+    }
+
+    /** Card mạng có thể là điểm phát Wi-Fi / chia sẻ USB / Bluetooth. */
+    static boolean isShareIface(String name) {
+        String n = name.toLowerCase(Locale.US);
+        return n.startsWith("wlan") || n.startsWith("ap") || n.startsWith("swlan")
+                || n.startsWith("softap") || n.startsWith("rndis") || n.startsWith("ncm")
+                || n.startsWith("bt-pan") || n.startsWith("eth");
     }
 
     /** IP hay gặp nhất để hiển thị: ưu tiên 192.168.x.1 (điểm phát). */

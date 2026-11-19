@@ -113,7 +113,8 @@ public class ShareActivity extends Activity {
         guide.setText("Máy khác chỉ cần:\n"
                 + "1. Nối Wi-Fi điểm phát của điện thoại này.\n"
                 + "2. Quét mã QR (hoặc mở trình duyệt vào địa chỉ trang hướng dẫn) để xem cách khai báo cho Android, iPhone, Windows, macOS.\n"
-                + "3. Khai báo một lần: Proxy → Tự động → dán địa chỉ PAC. Lần sau nối lại là dùng được ngay.\n\n"
+                + "3. Khai báo một lần: Proxy → Tự động → dán " + PacServer.fixedPacUrl()
+                + ". Điểm phát đổi dải IP cũng không phải sửa lại.\n\n"
                 + "Lưu ý: app nào bỏ qua proxy hệ thống (một số game) sẽ không đi qua được.");
         root.addView(guide);
 
@@ -154,7 +155,8 @@ public class ShareActivity extends Activity {
         if (ip != null && share) {
             String pacUrl = "http://" + ip + ":" + PacServer.PAC_PORT + "/p";
             String guideUrl = "http://" + ip + ":" + PacServer.PAC_PORT + "/";
-            tvAddr.setText("Proxy tự động (PAC):\n" + pacUrl
+            tvAddr.setText("Proxy tự động (khai báo một lần, dùng mãi):\n" + PacServer.fixedPacUrl()
+                    + "\n\nMáy không nhận địa chỉ trên thì dùng:\n" + pacUrl
                     + "\n\nProxy thủ công (HTTP/SOCKS5):\n" + ip + " : " + port
                     + "\n\nTrang hướng dẫn cho máy khác:\n" + guideUrl);
             if (!guideUrl.equals(lastQrText)) {
@@ -184,9 +186,7 @@ public class ShareActivity extends Activity {
     }
 
     private void copyPac() {
-        String ip = ShareManager.mainHotspotIp();
-        if (ip == null) { toast("Chưa bật điểm phát Wi-Fi"); return; }
-        String url = "http://" + ip + ":" + PacServer.PAC_PORT + "/p";
+        String url = PacServer.fixedPacUrl();
         ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (cm != null) cm.setPrimaryClip(ClipData.newPlainText("PAC", url));
         toast("Đã sao chép: " + url);

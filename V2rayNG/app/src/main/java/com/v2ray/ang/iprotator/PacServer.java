@@ -40,6 +40,7 @@ public final class PacServer {
 
     public static synchronized void start(Context ctx) {
         appCtx = ctx.getApplicationContext();
+        MdnsResponder.start(appCtx);
         if (server != null && !server.isClosed()) return;
         try {
             ServerSocket s = new ServerSocket();
@@ -55,6 +56,7 @@ public final class PacServer {
     }
 
     public static synchronized void stop() {
+        MdnsResponder.stop();
         try { if (server != null) server.close(); } catch (Exception ignored) {}
         server = null;
         synchronized (clients) { clients.clear(); }
@@ -133,14 +135,22 @@ public final class PacServer {
         } catch (Exception ignored) {}
     }
 
+    /** Địa chỉ PAC cố định theo tên mDNS, không đổi khi điểm phát đổi dải IP. */
+    public static String fixedPacUrl() {
+        return "http://" + MdnsResponder.HOST + ":" + PAC_PORT + "/p";
+    }
+
     static String guidePage(String ip, int port) {
-        String pac = "http://" + ip + ":" + PAC_PORT + "/p";
+        String pac = fixedPacUrl();
+        String pacIp = "http://" + ip + ":" + PAC_PORT + "/p";
         return "<!doctype html><html lang=vi><head><meta charset=utf-8>"
              + "<meta name=viewport content='width=device-width,initial-scale=1'><title>Chia sẻ V2Ray</title>"
              + "<style>body{font-family:sans-serif;max-width:640px;margin:16px auto;padding:0 16px;line-height:1.5}"
              + "code{background:#eee;padding:2px 6px;border-radius:4px;font-size:1.05em}h2{margin-top:24px}</style></head><body>"
              + "<h1>Dùng mạng V2Ray của điện thoại</h1>"
-             + "<p><b>Proxy tự động (khuyên dùng):</b> <code>" + pac + "</code></p>"
+             + "<p><b>Proxy tự động (khuyên dùng, khai báo một lần):</b> <code>" + pac + "</code></p>"
+             + "<p>Máy nào không nhận địa chỉ trên (một số điện thoại Android) thì dùng <code>" + pacIp
+             + "</code> (địa chỉ này đổi khi điểm phát đổi dải IP).</p>"
              + "<p><b>Hoặc proxy thủ công:</b> máy chủ <code>" + ip + "</code> cổng <code>" + port + "</code> (HTTP và SOCKS5 chung cổng)</p>"
              + "<h2>Điện thoại Android</h2><ol><li>Cài đặt → Wi-Fi → nhấn giữ mạng đang nối → Sửa (hoặc biểu tượng ⚙)</li>"
              + "<li>Tùy chọn nâng cao → Proxy → <b>Tự động cấu hình proxy</b></li><li>URL PAC: <code>" + pac + "</code> → Lưu</li></ol>"
